@@ -5,7 +5,7 @@ import discord
 FOOTER = "Steam Flock"
 
 
-def _base(title: str, description: str, color: discord.Color, avatar: str | None) -> discord.Embed:
+def _base(title, description, color, avatar) -> discord.Embed:
     embed = discord.Embed(
         title=title,
         description=description,
@@ -18,7 +18,7 @@ def _base(title: str, description: str, color: discord.Color, avatar: str | None
     return embed
 
 
-def format_duration(seconds: float) -> str:
+def format_duration(seconds) -> str:
     """Session length as '2h 14m', '43m', or '58s'."""
     total = int(seconds)
     hours, remainder = divmod(total, 3600)
@@ -31,7 +31,7 @@ def format_duration(seconds: float) -> str:
     return f"{secs}s"
 
 
-def started_playing(name: str, game: str, avatar: str | None) -> discord.Embed:
+def started_playing(name, game, avatar) -> discord.Embed:
     return _base(
         title=f"🎮 {name} started playing",
         description=f"**{game}**",
@@ -40,7 +40,7 @@ def started_playing(name: str, game: str, avatar: str | None) -> discord.Embed:
     )
 
 
-def switched_game(name: str, old_game: str, new_game: str, avatar: str | None) -> discord.Embed:
+def switched_game(name, old_game, new_game, avatar) -> discord.Embed:
     embed = _base(
         title=f"🔀 {name} switched games",
         description=f"**{new_game}**",
@@ -51,9 +51,7 @@ def switched_game(name: str, old_game: str, new_game: str, avatar: str | None) -
     return embed
 
 
-def stopped_playing(
-    name: str, game: str, avatar: str | None, duration: float | None
-) -> discord.Embed:
+def stopped_playing(name, game, avatar, duration) -> discord.Embed:
     embed = _base(
         title=f"💤 {name} stopped playing",
         description=f"**{game}**",

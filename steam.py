@@ -12,13 +12,13 @@ MAX_IDS_PER_REQUEST = 100
 class SteamClient:
     """Thin wrapper around the Steam Web API endpoints the bot needs."""
 
-    def __init__(self, api_key: str, steam_id: str, friends_file: str):
+    def __init__(self, api_key, steam_id, friends_file):
         self.api_key = api_key
         self.steam_id = steam_id
         self.friends_file = friends_file
         self.session = requests.Session()
 
-    def _get(self, path: str, params: dict) -> dict:
+    def _get(self, path, params) -> dict:
         params = {"key": self.api_key, **params}
         r = self.session.get(f"{BASE_URL}/{path}", params=params, timeout=10)
         r.raise_for_status()
@@ -36,7 +36,7 @@ class SteamClient:
         friends = data.get("friendslist", {}).get("friends", [])
         return [f["steamid"] for f in friends]
 
-    def get_summaries(self, ids: list[str]) -> dict[str, dict]:
+    def get_summaries(self, ids) -> dict[str, dict]:
         """Player summaries keyed by steamid, in chunks the API will accept."""
         summaries = {}
         for i in range(0, len(ids), MAX_IDS_PER_REQUEST):
