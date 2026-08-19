@@ -36,6 +36,11 @@ started_at: dict[str, float] = {}
 async def check_friends() -> None:
     activity = await asyncio.to_thread(steam.get_friend_activity)
 
+    channel = bot.get_channel(CHANNEL_ID)
+    if channel is None:
+        logger.error("Channel %s not found -- is the bot in that server?", CHANNEL_ID)
+        return
+
     now = time.monotonic()
     for friend in activity:
         steamid, name = friend["steamid"], friend["name"]
