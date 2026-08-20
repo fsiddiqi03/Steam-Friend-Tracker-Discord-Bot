@@ -196,9 +196,38 @@ a NULL avatar and a warning. A missing avatar is not a reason to skip a friend.
 Python function parameters carry no type annotations. Return type annotations
 are kept.
 
+## Runtime (second pass, implemented)
+
+The bot was rewired in a follow-up pass. Shape:
+
+- **`player.py`** — `Player` holds the last-seen state for one friend, plus
+  `open_session_id` and `last_polled_at`. `transition_for(player, live_game)`
+  is a pure function returning `started` / `stopped` / `switched` / `None`.
+  Making `switched` a first-class case is the fix for the old loop's bug.
+- **`tracker.py`** — `load_roster` builds the in-memory list at startup;
+  `apply_activity` writes one player's transition and reports what happened.
+  Knows nothing about Discord.
+- **`main.py`** — polls every 15s, diffs each `Player` against Steam, writes
+  through `tracker`, posts embeds.
+
+Decisions made in that pass:
+
+- **The open session row decides who is playing.** `load_roster` trusts
+  `game_sessions`, not the `players` cache: no open row means not playing, no
+  matter what the cache says. A stale cache corrects itself at startup.
+- **Python orchestrates transitions; there is no SQL transaction.** A switch is
+  two writes (close A, then open B). A crash between them cannot produce the
+  corrupt state, because the partial unique index forbids two open sessions —
+  the worst case is a session left open, which startup reconciliation closes.
+  This keeps the logic unit-testable without a database.
+- **The first poll after a restart reconciles silently.** It writes the
+  database but posts nothing, so a restart never replays old news into the
+  channel. Sessions that ended during downtime close at `last_polled_at` with
+  `ended_by = 'reconciled'`.
+- **A switch posts stop-then-start.** No "switched games" message; the
+  `switched_game` embed stays unused. The channel still reflects reality.
+
 ## Out of scope
 
-Rewiring `main.py` / `steam.py` to read the roster from `players`, write
-`game_sessions` rows, reconcile on startup, and fix the A-to-B switch
-announcement. Tracked as follow-up work with its own plan. The bot continues
-running off `friends.json` until then.
+Stats, leaderboards, and the dashboard this schema was designed to support.
+Nothing reads `game_sessions` yet beyond the bot's own reconciliation.
