@@ -1,3 +1,4 @@
 .env
 friends.json
 .venv
+__pycache__
