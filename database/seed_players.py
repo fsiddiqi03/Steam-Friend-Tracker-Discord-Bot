@@ -1,5 +1,10 @@
 """One-shot: load the friends.json roster into the Supabase players table.
 
+Run from the repo root as a module, not as a script -- it imports sibling
+packages, which needs the root on sys.path:
+
+    python -m database.seed_players [--dry-run]
+
 Safe to re-run. Edit friends.json, run this again, and the roster catches up.
 Deliberately writes no game state -- the bot owns those columns.
 """
@@ -8,9 +13,9 @@ import argparse
 import json
 import logging
 
-import db
+from database import db
 from config import FRIENDS_FILE, LOG_LEVEL, STEAM_API_KEY, STEAM_ID
-from steam import SteamClient
+from Steam.steam import SteamClient
 
 logging.basicConfig(
     level=LOG_LEVEL,

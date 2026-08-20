@@ -196,6 +196,25 @@ a NULL avatar and a warning. A missing avatar is not a reason to skip a friend.
 Python function parameters carry no type annotations. Return type annotations
 are kept.
 
+## Layout
+
+Files were reorganised into packages after the plan was written, so the paths
+in `docs/superpowers/plans/` refer to their original locations.
+
+```
+main.py, config.py, embeds.py    entry point and shared config
+Steam/    player.py steam.py tracker.py
+database/ db.py seed_players.py friends.json migrations/
+```
+
+Both packages import each other through the repo root, so anything with local
+imports runs as a module from the root, not as a bare script:
+
+```
+python main.py                        # entry point, root-level
+python -m database.seed_players       # NOT python database/seed_players.py
+```
+
 ## Runtime (second pass, implemented)
 
 The bot was rewired in a follow-up pass. Shape:

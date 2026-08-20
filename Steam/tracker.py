@@ -6,8 +6,8 @@ what, if anything, to say about the result.
 
 import logging
 
-import db
-from player import Player, parse_timestamp, transition_for
+from database import db
+from Steam.player import Player, parse_timestamp, transition_for
 
 logger = logging.getLogger("tracker")
 

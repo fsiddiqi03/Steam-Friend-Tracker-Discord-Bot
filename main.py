@@ -5,9 +5,9 @@ from datetime import datetime, timezone
 import discord
 from discord.ext import commands, tasks
 
-import db
+from database import db
 import embeds
-import tracker
+from Steam import tracker
 from config import (
     CHANNEL_ID,
     FRIENDS_FILE,
@@ -19,7 +19,7 @@ from config import (
     SUPABASE_URL,
     TOKEN,
 )
-from steam import SteamClient
+from Steam.steam import SteamClient
 
 logging.basicConfig(
     level=LOG_LEVEL,
@@ -154,19 +154,6 @@ async def on_ready() -> None:
 
 
 async def main() -> None:
-    missing = [
-        name
-        for name, value in (
-            ("DISCORD_TOKEN", TOKEN),
-            ("DISCORD_CHANNEL_ID", CHANNEL_ID),
-            ("STEAM_API_KEY", STEAM_API_KEY),
-            ("SUPABASE_URL", SUPABASE_URL),
-            ("SUPABASE_SERVICE_ROLE_KEY", SUPABASE_SERVICE_ROLE_KEY),
-        )
-        if not value
-    ]
-    if missing:
-        raise SystemExit(f"Missing required .env values: {', '.join(missing)}")
 
     async with bot:
         await bot.start(TOKEN)
